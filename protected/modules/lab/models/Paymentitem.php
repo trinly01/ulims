@@ -32,7 +32,7 @@ class Paymentitem extends CActiveRecord
 			array('orderofpayment_id, details, amount', 'required'),
 			array('request_id, rstl_id, orderofpayment_id, cancelled', 'numerical', 'integerOnly'=>true),
 			//array('amount', 'numerical'),
-			array('amount', 'match' ,'pattern' => '/^\s*[-+]?[0-9]*[.,]?[0-9]+([eE][-+]?[0-9]+)?\s*$/'),
+			array('amount', 'match' ,'pattern' => '/^-?(?:\d+|\d{1,3}(?:,\d{3})+)?(?:\.\d+)?$/'),
 			array('amount', 'maxValueValidation', 'maxValue'=>$this->maxValue()),
 			array('amount', 'minValueValidation', 'minValue'=>1),
 			array('details', 'length', 'max'=>50),
