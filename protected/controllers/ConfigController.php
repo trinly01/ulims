@@ -237,7 +237,6 @@ class ConfigController extends Controller
 		//$settingsarr['Region']=array('id'=>$_POST['Region']['id']);
 		//$settingsarr['ProgramStart']=array('year'=>$_POST['ProgramStart']['year']);
 		//$settingsarr['Allowips_admin']=array_merge($allowips_admin,$defaultIpsToAllow);
-		//print_r($settingsarr);
 		
 		//we will write the $settings array to settings.ini file
 		//to use this settings values, we need to configure our config/main.php file
@@ -336,16 +335,9 @@ class ConfigController extends Controller
 		$affectedTablesArray = unserialize(base64_decode($str_var));
 		if($affectedTablesArray){
 			foreach($affectedTablesArray as $affectedTable){
-				//$tableNames[]=$affectedTable['tableName'];
-				//$models[]=$affectedTable['model']->getDbConnection();
 				$affectedTable['model']->getDbConnection()->createCommand()->truncateTable($affectedTable['tableName']);
 			}
 			
-			//$this->getDbConnection()->createCommand()->truncateTable($this->tableName());
-			
-			//$check=new Check;
-			//print_r($check->getDbConnection());
-			print_r($models);
 			echo CJSON::encode(array(
 				'status'=>"Tables successfully truncated!",
 				'affectedTablesArray'=>$affectedTablesArray,
@@ -454,12 +446,7 @@ class ConfigController extends Controller
 					'inputname'=>$_POST['inputname'],
 					));
 				exit;
-			}
-			//example
-			//$array = array('test' => 0, 'replace this' => 1, 3 => 'hey');
-			/*echo '<pre>', print_r($settings_array['FormOrderofpayment'], true), '</pre>';
-			$array = $this->replace_val('logoRight', '', $settings_array['FormOrderofpayment']);
-			echo '<pre>', print_r($array, true), '</pre>';*/			
+			}			
 		}
 	
 		echo CJSON::encode(array('msg'=>'failure'));
