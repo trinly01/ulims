@@ -1,10 +1,7 @@
 <div style="position:relative">
-<?php
+<?php 
 /* @var $this RequestController */
 /* @var $model Request */
-
-//echo $previousRequest->requestRefNum;
-//print_r($generatedThisRequest);
 
 if($model->cancelled)
 	$this->renderPartial('_cancelled',array('model'=>$model->cancelDetails));
@@ -24,33 +21,21 @@ $this->menu=array(
 );  
 ?>
 
-<?php $linkCancel = CHtml::ajaxLink(
-				'<span class="icon-white icon-minus-sign"></span> Cancel',
-				$this->createUrl('request/cancel/',array('id'=>$model->id)), 
-				array('success'=>'function(data){
-						$.fn.yiiGridView.update("sample-grid");
-		                $.fn.yiiGridView.update("analysis-grid");
-		                location.reload();
-					}'),
-				array(
-					"onclick"=>"if (!confirm('Do you really want to Cancel this Request?')){return}",
-					'class'=>'btn btn-danger btn-small'
-				) 
-				);
-	
-	$linkCancelWithReason = Chtml::link('<span class="icon-white icon-minus-sign"></span> Cancel Request', '', array( 
+<?php $linkCancelWithReason = CHtml::link('<span class="icon-white icon-minus-sign"></span> Cancel Request', '', array( 
 			'style'=>'cursor:pointer;',
 			'class'=>'btn btn-danger btn-small',
-			'onClick'=>'js:{cancelRequest(); $("#dialogCancel").dialog("open");}',
+			'onClick'=>'js:{
+					if('.$generated.'>0){
+						alert("Cannot cancel this Request. If you set the wrong Laboratory when creating this Request, \nleave this Request for now and create a new one with the correct Laboratory.");
+					}else{
+						cancelRequest(); 
+						$("#dialogCancel").dialog("open");					
+					}
+				}',
 			));
-
-	/*$linkCancelDetails = Chtml::link('<span class="icon-white icon-search"></span> Cancel Details', '', array( 
-			'style'=>'cursor:pointer;',
-			'class'=>'btn btn-info btn-small',
-			'onClick'=>'js:{cancelDetails('.$model->cancelDetails->id.'); $("#dialogCancel").dialog("open");}',
-			));*/
 ?>
 <h1>View Request: <?php echo $model->requestRefNum; ?><small>
+<?php //echo $model->cancelled ? '' : (Yii::app()->getModule('lab')->isLabAdmin() ? $linkCancelWithReason : '');?>
 <?php echo $model->cancelled ? '' : (Yii::app()->getModule('lab')->isLabAdmin() ? $linkCancelWithReason : '');?>
 </small>
 </h1>
@@ -99,10 +84,6 @@ $this->menu=array(
             'type'=>'raw',
             'value'=>'',
         ),
-        /*array(
-			'name'=>'paymentStatus',
-			'type'=>'html',
-			'value'=>$model->paymentStatus),*/
         'receivedBy',
 		'conforme',
 		
@@ -143,21 +124,18 @@ $this->menu=array(
         //define the CArrayDataProvider's "keyField" with the Primary Key label of that Table/Model.
         'dataProvider' => $sampleDataProvider,
         'columns' => array(
-    		//'sampleCode',
     		array(
 				'name'=>'SAMPLE CODE',
 				'value'=>'$data->sampleCode',
 				'type'=>'raw',
     			'htmlOptions' => array('style' => 'width: 125px; padding-left: 10px; text-align: center;'),
 			),
-    		//'sampleName',
     		array(
 				'name'=>'SAMPLE NAME',
 				'value'=>'$data->sampleName',
 				'type'=>'raw',
     			'htmlOptions' => array('style' => 'width: 250px; padding-left: 10px;'),
 			),
-    		//'description'
     		array(
 				'name'=>'DESCRIPTION',
 				'value'=>'$data->description',
@@ -165,7 +143,6 @@ $this->menu=array(
     			'htmlOptions' => array('style' => 'padding-left: 10px;'),
 			),
 			array(
-			//'class'=>'CButtonColumn',
 			'header'=>'Cancel',
 			'class'=>'bootstrap.widgets.TbButtonColumn',
 						'deleteConfirmation'=>"js:'Do you really want to delete sample: '+$.trim($(this).parent().parent().children(':nth-child(2)').text())+'?'",
@@ -178,7 +155,6 @@ $this->menu=array(
 								),
 							'cancel' => array(
 								'label'=>'Cancel',
-								//'imageUrl'=>'images/icn/status.png',
 								'url'=>'Yii::app()->createUrl("lab/sample/cancel/id/$data->id")',
 								'options' => array(
 									'confirm'=>'Are you want to cancel Sample?',
@@ -304,7 +280,7 @@ $this->menu=array(
 								),
 							'cancel' => array(
 								'label'=>'Cancel',
-								'url'=>'Yii::app()->createUrl("lms/analysis/cancel/id/$data->id")',
+								'url'=>'Yii::app()->createUrl("lab/analysis/cancel/id/$data->id")',
 								'options' => array(
 									'confirm'=>'Are you want to cancel Analysis?',
 									'ajax' => array('type' => 'get', 'url'=>'js:$(this).attr("href")', 'success' => 'js:function(data) { $.fn.yiiGridView.update("analysis-grid")}')
@@ -353,15 +329,8 @@ switch ($generated) {
         echo '<p style="font-style: italic; font-weight: bold; color: red;">Generate Sample Codes from previous requests and refresh this page!</p>';
         break;
 }		
-	//echo CHtml::ajaxLink($text, $url);
-	//echo CHtml::ajaxLink($text, $url);
 ?>
 </div>
-<?php /*echo Chtml::link('Generate Sample Codes', '', array( 
-			'style'=>'cursor:pointer;',
-			'onClick'=>'js:{confirmGenerateSampleCode(); $("#dialogConfirmGenerate").dialog("open");}',
-			));*/
-?>
 
 <!-- Cancel Dialog : Start -->
 <?php
