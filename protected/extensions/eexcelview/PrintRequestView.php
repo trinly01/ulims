@@ -425,22 +425,17 @@ Yii::import('zii.widgets.grid.CGridView');
 			self::$activeSheet->SetCellValue('J35', 'Sub-Total');
 			self::$activeSheet->SetCellValue('K35', '=SUM(K16:K34)');
 			
-			if($this->request->discount)
-				//$discount = 0.25;
-				self::$activeSheet->SetCellValue('K36', '=SUM(K16:K34)*0.25');
-			else
-				//$discount = 0;
+			if($this->request->discount){
+				$discount = $this->request->disc->rate/100;
+				self::$activeSheet->SetCellValue('K36', '=SUM(K16:K34)*'.$discount);
+			}else{
 				self::$activeSheet->SetCellValue('K36', '=SUM(K16:K34)*0');
-				
+			}	
+			
 			self::$activeSheet->SetCellValue('J36', 'Discount');
 			
 			self::$activeSheet->SetCellValue('K50', $this->request->total);
-			/*
-			if($this->request->discount)
-				self::$activeSheet->SetCellValue('K50', '=SUM(K16:K28) - SUM(K16:K28)*0.25');
-			else 
-				self::$activeSheet->SetCellValue('K50', '=K35-K36');
-			*/	
+	
 			self::$activeSheet->SetCellValue('A52', 'OR NO.:');
 			self::$activeSheet->SetCellValue('A53', 'DATE:');
 			
