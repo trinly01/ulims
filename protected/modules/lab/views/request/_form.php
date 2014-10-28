@@ -58,7 +58,7 @@
 				'id'=>'Request_customerName',
 			    'name'=>'Request[customerName]',
 			    'source'=>$this->createUrl('request/searchCustomer'),
-				'value'=>$model->customerName,
+				'value'=>$model->customer->customerName,
 			    'options'=>array(
 			        //'delay'=>300,
 			        'minLength'=>1,
@@ -118,8 +118,8 @@
                 <td class="fieldtel"><?php echo $model->customer->tel;?></td>
             </tr>
             <tr>
-                <th>Address</th>
-                <td class="fieldaddr"><?php echo $model->customer->address;?></td>
+                <th>Complete Address</th>
+                <td class="fieldaddr"><?php echo $model->customer->completeAddress;?></td>
                 <th>Fax</th>
                 <td class="fieldfax"><?php echo $model->customer->fax;?></td>
             </tr>
@@ -132,7 +132,7 @@
 				'data'=>$model,
 				'attributes'=>array(
 					'customer.customerName', 'customer.tel',
-					'customer.address', 'customer.fax',
+					'customer.completeAddress', 'customer.fax',
 				),
 			));
 		}

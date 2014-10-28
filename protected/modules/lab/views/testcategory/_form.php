@@ -21,7 +21,7 @@
 	
 	<div class="row">
 		<?php echo $form->labelEx($model,'labId'); ?>
-		<?php echo $form->dropDownList($model,'labId', Lab::listLabName()); ?>
+		<?php echo $form->dropDownList($model,'labId', Initializecode::listLabName()); ?>
 		<?php echo $form->error($model,'labId'); ?>
 	</div>
 	
@@ -32,7 +32,7 @@
 	</div>
 
 	<div class="row buttons">
-		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
+		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save',array('class'=>'btn btn-info')); ?>
 	</div>
 
 <?php $this->endWidget(); ?>
