@@ -21,7 +21,7 @@
 	
 	<div class="row">
 		<?php echo $form->labelEx($model,'labId'); ?>
-		<?php echo $form->dropDownList($model,'labId', Lab::listLabName()); ?>
+		<?php echo $form->dropDownList($model,'labId', Initializecode::listLabName()); ?>
 		<?php echo $form->error($model,'labId'); ?>
 	</div>
 	
