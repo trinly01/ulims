@@ -126,30 +126,11 @@ class Deposit extends CActiveRecord
 			if($this->isNewRecord){
 				$this->rstl_id = Yii::app()->Controller->getRstlId();
 				$this->depositDate = date('Y-m-d', strtotime($_POST['Deposit']['depositDate']));
-				//if($_POST['override'] == 1)
-					//$this->endOr = $_POST['endOrOverride'];
-		        
 				return true;
 			}else{
-				//$this->endOr = $_POST['endOr'];
-				$this->depositDate = date('Y-m-d', strtotime($_POST['Deposit']['depositDate']));
-				//if($_POST['override'] == 1)
-					//$this->endOr = $_POST['endOrOverride'];
-				
+				$this->depositDate = date('Y-m-d', strtotime($_POST['Deposit']['depositDate']));				
 				return true;
 			}
-			
-			/*if($_POST['override'] == 1){
-				$this->rstl_id = Yii::app()->Controller->getRstlId();
-				$this->endOr = $_POST['endOrOverride'];
-				$this->depositDate = date('Y-m-d', strtotime($_POST['Deposit']['depositDate']));
-				return true;
-			}else{
-				$this->rstl_id = Yii::app()->Controller->getRstlId();
-				$this->endOr = $_POST['endOr'];
-				$this->depositDate = date('Y-m-d', strtotime($_POST['Deposit']['depositDate']));
-				return true;
-			}*/
 	   }
 	   return false;
 	}	
@@ -158,10 +139,6 @@ class Deposit extends CActiveRecord
 	{
 		$endReceipt = array();
 		
-		//$criteria=new CDbCriteria;
-		//$criteria->order='id DESC';
-		//$lastReceipt = Collection::model()->find($criteria);
-		
 		$start = Deposit::getFirstOr($depositType);
 		
 		$receipt = Receipt::model()->findByAttributes(
@@ -169,10 +146,9 @@ class Deposit extends CActiveRecord
 		);
 		
 		$modelReceipts = Receipt::model()->findAll(array(
-					'condition' => 'id >= :id AND project = :project AND rstl_id = :rstl_id',
-				    'params' => array(':id' => $receipt->id, ':project' => $receipt->project, ':rstl_id'=> Yii::app()->Controller->getRstlId()),
-					//'params' => array(':id' => $receipt->id, ':project' => $depositType),
-				));
+			'condition' => 'id >= :id AND project = :project AND rstl_id = :rstl_id',
+			'params' => array(':id' => $receipt->id, ':project' => $receipt->project, ':rstl_id'=> Yii::app()->Controller->getRstlId()),
+		));
 		
 		$y = array("index" => '' , "receipt" => '');
 			array_push($endReceipt, $y);		
@@ -180,9 +156,6 @@ class Deposit extends CActiveRecord
 		foreach($modelReceipts as $modelReceipt){
 			$y = array("index" => $modelReceipt->receiptId , "receipt" => $modelReceipt->receiptId);
 			array_push($endReceipt, $y);
-			
-			//if($modelReceipt->project != $receipt->project)
-				//break;
 		}		
 				
 		return $endReceipt;		
@@ -205,7 +178,6 @@ class Deposit extends CActiveRecord
 				
 		$modelReceipts = CHtml::listdata($modelReceipts, 'receiptId', 'receiptId');
 		
-		//$qwerty = '<option>'.$receipt->receiptId.'</option>';
 		$endReceipts .=  CHtml::tag('option', array('value'=>''),CHtml::encode($name),true);
 		
 		foreach($modelReceipts as $value=>$name){
@@ -228,7 +200,6 @@ class Deposit extends CActiveRecord
 					'order' => 'depositDate DESC, id DESC',
 					'limit' => 1,
 				));
-				//))->endOr;
 				
 		if(isset($lastDepositOr)){
 			$lastReceiptOrId = Receipt::model()->find(array(
@@ -240,49 +211,23 @@ class Deposit extends CActiveRecord
 					'condition' => 'id > :id AND project = :project AND rstl_id = :rstl_id',
 				    'params' => array(':id' => $lastReceiptOrId, ':project' => $depositType, ':rstl_id'=> Yii::app()->Controller->getRstlId()),
 					'order' => 'id ASC',
-					'limit' => 1,	
 			));
 		}else{
 			$lastReceiptOrId = Receipt::model()->find(array(
 					'condition' => 'rstl_id = :rstl_id',
 				    'params' => array(':rstl_id'=> Yii::app()->Controller->getRstlId()),
 				    'order' => 'id ASC',
-					'limit' => 1,
 			))->id;
 			
 			$startOr = Receipt::model()->find(array(
 					'condition' => 'id = :id AND project = :project AND rstl_id = :rstl_id',
 				    'params' => array(':id' => $lastReceiptOrId, ':project' => $depositType, ':rstl_id'=> Yii::app()->Controller->getRstlId()),
 					'order' => 'id ASC',
-					'limit' => 1,	
 			));
 		}
 		
-		if($startOr){
-				$start = $startOr->receiptId;
-		}else{
-			/*$exist = Receipt::model()->count(array(
-				'condition'=>'project = :project AND rstl_id = :rstl_id',
-				'params' => array(':project' => $depositType, ':rstl_id'=> Yii::app()->Controller->getRstlId()),
-				));
-			if($exist == 0){*/
-				/*$start = Receipt::model()->find(array(
-						'condition' => 'project = :project AND rstl_id = :rstl_id',
-					    'params' => array(':project' => $depositType, ':rstl_id'=> Yii::app()->Controller->getRstlId()),
-						'order' => 'id ASC',
-						'limit' => 1,	
-				))->receiptId;*/
-			//}
-		}
-		
-		/* Override First OR */
-		/* Set the new OR if there is a 
-		 * change in the OR Series
-		 * 
-		 * $start = 2435001;
-		 * 
-		 * 
-		*/
+		if($startOr)
+			$start = $startOr->receiptId;
 		
 		return $start;
 		
@@ -290,18 +235,12 @@ class Deposit extends CActiveRecord
 
 	public function getFirstOrBySeries($orseriesId, $project=0)
 	{
-		/*$depositExist = Deposit::model()->find(array(
-					'condition' => 'depositType = :depositType AND rstl_id = :rstl_id',
-				    'params' => array(':depositType' => $depositType, ':rstl_id'=> Yii::app()->Controller->getRstlId()),
-				));*/
 		$lastDepositOr = Deposit::model()->find(array(
 					'condition' => 'orseries_id = :orseriesId AND depositType=:depositType AND rstl_id = :rstl_id',
 				    'params' => array(':orseriesId' => $orseriesId, ':depositType'=>$project,
 										':rstl_id'=> Yii::app()->Controller->getRstlId()),
 					'order' => 'depositDate DESC, id DESC',
-					'limit' => 1,
 				));
-				//))->endOr;
 				
 		if(isset($lastDepositOr)){
 			$lastReceiptOrId = Receipt::model()->find(array(
@@ -313,49 +252,18 @@ class Deposit extends CActiveRecord
 					'condition' => 'id > :id AND orseries_id = :orseriesId AND rstl_id = :rstl_id',
 				    'params' => array(':id' => $lastReceiptOrId, ':orseriesId' => $orseriesId, ':rstl_id'=> Yii::app()->Controller->getRstlId()),
 					'order' => 'id ASC',
-					'limit' => 1,	
 			));
 		}else{
-			$lastReceiptOrId = Receipt::model()->find(array(
-					'condition' => 'project=:project AND rstl_id = :rstl_id',
-				    'params' => array(':project'=>$project, ':rstl_id'=> Yii::app()->Controller->getRstlId()),
-				    'order' => 'id ASC',
-					'limit' => 1,
-			))->id;
 			
 			$startOr = Receipt::model()->find(array(
-					'condition' => 'id = :id AND orseries_id = :orseriesId AND rstl_id = :rstl_id',
-				    'params' => array(':id' => $lastReceiptOrId, ':orseriesId' => $orseriesId, ':rstl_id'=> Yii::app()->Controller->getRstlId()),
-					'order' => 'id ASC',
-					'limit' => 1,	
+					'condition' => 'project = :project AND orseries_id = :orseriesId AND rstl_id = :rstl_id',
+				    'params' => array(':project' => $project, ':orseriesId' => $orseriesId, ':rstl_id'=> Yii::app()->Controller->getRstlId()),
+					'order' => 'id ASC'
 			));
 		}
 		
-		if($startOr){
-				$start = $startOr->receiptId;
-		}else{
-			/*$exist = Receipt::model()->count(array(
-				'condition'=>'project = :project AND rstl_id = :rstl_id',
-				'params' => array(':project' => $depositType, ':rstl_id'=> Yii::app()->Controller->getRstlId()),
-				));
-			if($exist == 0){*/
-				/*$start = Receipt::model()->find(array(
-						'condition' => 'project = :project AND rstl_id = :rstl_id',
-					    'params' => array(':project' => $depositType, ':rstl_id'=> Yii::app()->Controller->getRstlId()),
-						'order' => 'id ASC',
-						'limit' => 1,	
-				))->receiptId;*/
-			//}
-		}
-		
-		/* Override First OR */
-		/* Set the new OR if there is a 
-		 * change in the OR Series
-		 * 
-		 * $start = 2435001;
-		 * 
-		 * 
-		*/
+		if($startOr)
+			$start = $startOr->receiptId;
 		
 		return $start;
 		
@@ -379,7 +287,6 @@ class Deposit extends CActiveRecord
 				
 		$modelReceipts = CHtml::listdata($modelReceipts, 'receiptId', 'receiptId');
 		
-		//$qwerty = '<option>'.$receipt->receiptId.'</option>';
 		$endReceipts .=  CHtml::tag('option', array('value'=>''),CHtml::encode($name),true);
 		
 		foreach($modelReceipts as $value=>$name)
