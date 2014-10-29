@@ -23,7 +23,7 @@ echo $id;
 	<div class="row">
 		<?php echo $form->labelEx($model,'lab_id'); ?>
 		<?php //echo $form->textField($model,'lab_id'); ?>
-		<?php echo $form->dropDownList($model,'lab_id', Lab::listLabName(), array('style'=>'width: 300px;', 'readonly'=>true)); ?>
+		<?php echo $form->dropDownList($model,'lab_id', Initializecode::listLabName(), array('style'=>'width: 300px;', 'readonly'=>true)); ?>
 		<?php echo $form->error($model,'lab_id'); ?>
 	</div>
 
