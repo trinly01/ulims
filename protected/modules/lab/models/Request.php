@@ -304,7 +304,7 @@ class Request extends CActiveRecord
 		$request = Request::model()->find(array(
    			'select'=>'requestRefNum, rstl_id, labId, requestDate', 
 			//'order'=>'requestRefNum DESC, requestDate DESC',
-			'order'=>'create_time DESC',
+			'order'=>'create_time DESC, id DESC',
     		'condition'=>'rstl_id = :rstl_id AND labId = :labId AND YEAR(requestDate) = :year',
     		'params'=>array(':rstl_id' => Yii::app()->Controller->getRstlId(), ':labId' => $lab, ':year' => date('Y') )
 		));
