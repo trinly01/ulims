@@ -52,7 +52,7 @@ class Request extends CActiveRecord
 			array('requestTime', 'length', 'max'=>25),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, requestRefNum, requestId, requestDate, requestTime, rstl_id, labId, customerId, paymentType, discount, orId, total, reportDue, conforme, receivedBy, cancelled, from_date, to_date, customer_search, paymentStatus, customerName', 'safe', 'on'=>'search'),
+			array('id, requestRefNum, requestId, requestDate, requestTime, rstl_id, labId, customerId, paymentType, discount, orId, total, reportDue, conforme, receivedBy, cancelled, from_date, to_date, customer_search, paymentStatus, customerName, create_time', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -236,11 +236,7 @@ class Request extends CActiveRecord
 	public function getDiscount($keys, $discount)
 	{
 		$requestTotal = $this->getTestTotal($keys);
-		/*if($discount == 1)
-			return $requestTotal * 0.25;
-		else
-			return 0;
-		*/	
+		
 		if($this->disc)
 			return $requestTotal * ($this->disc->rate/100);
 		else 
@@ -305,25 +301,10 @@ class Request extends CActiveRecord
 	function generateRequestRef($lab){
 		$date = date('mY', strtotime($this->requestDate));
 		
-		//$checkInitializeCode = Request::checkInitializeCode($lab);
-		
-		/*$count = Requestcode::model()->find(array(
-   			'select'=>'*',
-			'order'=>'id DESC',
-    		'condition'=>'rstl_id = :rstl_id AND labId = :labId AND year = :year',
-    		'params'=>array(':rstl_id' => Yii::app()->user->rstlId, ':labId' => $lab, ':year' => date('Y') )
-		))->number;	
-		
-		//if($checkInitializeCode['initialize']){
-			//$count = $checkInitializeCode['code'] + 1;	
-		//}else{
-			$count = $count + 1;
-		//}*/
-		//$laboratory = Lab::model()->findByPk($lab);
-		
 		$request = Request::model()->find(array(
    			'select'=>'requestRefNum, rstl_id, labId, requestDate', 
-			'order'=>'requestRefNum DESC, requestDate DESC',
+			//'order'=>'requestRefNum DESC, requestDate DESC',
+			'order'=>'create_time DESC',
     		'condition'=>'rstl_id = :rstl_id AND labId = :labId AND YEAR(requestDate) = :year',
     		'params'=>array(':rstl_id' => Yii::app()->Controller->getRstlId(), ':labId' => $lab, ':year' => date('Y') )
 		));
@@ -494,7 +475,7 @@ class Request extends CActiveRecord
 		
 		foreach($requests as $request)
 		{
-				$reqs .= CHtml::link($request->requestRefNum, Yii::app()->createUrl('lms/request/view', array('id'=>$request->id)), array('target'=>'_blank')).' ';
+				$reqs .= CHtml::link($request->requestRefNum, Yii::app()->createUrl('lab/request/view', array('id'=>$request->id)), array('target'=>'_blank')).' ';
 		}
 		
 		$reqs .= '</div>';
