@@ -2,8 +2,10 @@
 /* @var $this CustomerController */
 /* @var $model Customer */
 /* @var $form CActiveForm */
-Yii::app()->clientscript->scriptMap['jquery.js'] = false;
-Yii::app()->clientScript->scriptMap['jquery.min.js'] = false;
+if(Yii::app()->request->isAjaxRequest){
+	Yii::app()->clientscript->scriptMap['jquery.js'] = false;
+	Yii::app()->clientScript->scriptMap['jquery.min.js'] = false;
+}
 ?>
 
 <div class="form wide">
